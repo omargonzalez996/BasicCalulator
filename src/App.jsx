@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./App.scss";
 
 function App() {
   const [numero, setNumero] = useState(""); //Cantidad en pantalla
-  const [cantidadUno, setCantidadUno] = useState("");
-  const [cantidadDos, setCantidadDos] = useState("");
   const [operacion, setOperacion] = useState(0);
 
+  const [cantidadUno, setCantidadUno] = useState("");
+  const [cantidadDos, setCantidadDos] = useState("");
+
+  //Actualiza los numeros en pantalla conforme se introducen
   const handleNumber = (num) => {
     setNumero(numero + num);
   };
@@ -18,40 +20,80 @@ function App() {
     }
   };
 
-  const handlePLus = () => {
+  const handleSuma = () => {
     setOperacion(1);
-    setCantidadUno(numero);
+    setCantidadUno(parseInt(numero));
     setNumero("");
   };
 
-  const handleResult = () => {
-    let canuno = parseInt(cantidadUno);
-    let candos = parseInt(cantidadDos);
-    let res = 0;
+  const handleResta = () => {
+    setOperacion(2);
+    setCantidadUno(parseInt(numero));
     setNumero("");
+  };
+
+  const handleMultiplicacion = () => {
+    setOperacion(3);
+    setCantidadUno(parseInt(numero));
+    setNumero("");
+  };
+
+  const handleDivision = () => {
+    setOperacion(4);
+    setCantidadUno(parseInt(numero));
+    setNumero("");
+  };
+
+  const clean = () => {
+    setOperacion(0);
+    setCantidadUno("");
+    setCantidadDos("");
+    setNumero("");
+  };
+
+  useEffect(() => {
+    console.log(`c1: ${cantidadUno} c2: ${cantidadDos} op: ${operacion}`);
+    if (cantidadDos != "" && cantidadUno != "" && operacion != 0) {
+      console.log("access");
+      let result = Operaciones(cantidadUno, cantidadDos);
+      setNumero(result);
+      setTimeout(() => {
+        clean();
+      }, 5000);
+    }
+  }, [cantidadDos, cantidadUno]);
+
+  useEffect(() => {
+    console.log(`cantidad uno: ${cantidadUno}`);
+  }, [cantidadUno]);
+
+  useEffect(() => {
+    console.log(`cantidad dos: ${cantidadDos}`);
+  }, [cantidadDos]);
+
+  const Operaciones = (canuno, candos) => {
     switch (operacion) {
       case 1: //Suma
-        res = canuno + candos;
-        console.log(res);
-        setNumero(res);
-        break;
+        let suma = canuno + candos;
+        return suma;
       case 2: //Resta
-        res = canuno - candos;
-        setNumero(res);
-        break;
+        let resta = canuno - candos;
+        return resta;
       case 3: //Multiplicacion
-        res = canuno * candos;
-        setNumero(res);
-        break;
+        let producto = canuno * candos;
+        return producto;
       case 4: //División
-        res = canuno / candos;
-        setNumero(res);
-        break;
+        let division = canuno / candos;
+        return division;
       default:
-        break;
+        return 0;
     }
-    setNumero();
   };
+
+  const handleResult = () => {
+    setCantidadDos(parseInt(numero));
+  };
+
   return (
     <div className="App">
       <div id="contenedor-calc">
@@ -106,7 +148,7 @@ function App() {
           >
             6
           </button>
-          <button onClick={() => handlePLus()}>+</button>
+          <button onClick={() => handleSuma()}>+</button>
           <button
             onClick={(e) => handleNumber(e.target.value)}
             className="number"
@@ -131,8 +173,8 @@ function App() {
           >
             9
           </button>
-          <button>-</button>
-          <button>.</button>
+          <button onClick={() => handleResta()}>-</button>
+          <button onClick={() => handleMultiplicacion()}>*</button>
           <button
             onClick={(e) => handleNumber(e.target.value)}
             className="number"
@@ -141,7 +183,7 @@ function App() {
           >
             0
           </button>
-          <button>/</button>
+          <button onClick={() => handleDivision()}>/</button>
           <button onClick={() => handleResult()}>=</button>
         </div>
       </div>
